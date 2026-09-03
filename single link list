@@ -1,0 +1,140 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Structure of a node
+struct Node {
+    int data;
+    struct Node *next;
+};
+
+// Display the linked list
+void display(struct Node *head) {
+    struct Node *temp = head;
+
+    if (head == NULL) {
+        printf("List is empty\n");
+        return;
+    }
+
+    while (temp != NULL) {
+        printf("%d -> ", temp->data);
+        temp = temp->next;
+    }
+
+    printf("NULL\n");
+}
+
+// Insert at beginning
+struct Node* insertBeginning(struct Node *head, int value) {
+    struct Node *newNode;
+
+    newNode = (struct Node*)malloc(sizeof(struct Node));
+
+    newNode->data = value;
+    newNode->next = head;
+
+    head = newNode;
+
+    return head;
+}
+
+// Insert at end
+struct Node* insertEnd(struct Node *head, int value) {
+    struct Node *newNode;
+    struct Node *temp;
+
+    newNode = (struct Node*)malloc(sizeof(struct Node));
+
+    newNode->data = value;
+    newNode->next = NULL;
+
+    // If list is empty
+    if (head == NULL) {
+        return newNode;
+    }
+
+    temp = head;
+
+    while (temp->next != NULL) {
+        temp = temp->next;
+    }
+
+    temp->next = newNode;
+
+    return head;
+}
+
+// Delete first node
+struct Node* deleteBeginning(struct Node *head) {
+    struct Node *temp;
+
+    if (head == NULL) {
+        printf("List is empty\n");
+        return head;
+    }
+
+    temp = head;
+    head = head->next;
+
+    free(temp);
+
+    return head;
+}
+
+// Delete last node
+struct Node* deleteEnd(struct Node *head) {
+    struct Node *temp;
+    struct Node *prev;
+
+    if (head == NULL) {
+        printf("List is empty\n");
+        return head;
+    }
+
+    // Only one node
+    if (head->next == NULL) {
+        free(head);
+        return NULL;
+    }
+
+    temp = head;
+
+    while (temp->next != NULL) {
+        prev = temp;
+        temp = temp->next;
+    }
+
+    prev->next = NULL;
+    free(temp);
+
+    return head;
+}
+
+int main() {
+    struct Node *head = NULL;
+
+    // Insert elements
+    head = insertBeginning(head, 30);
+    head = insertBeginning(head, 20);
+    head = insertBeginning(head, 10);
+
+    head = insertEnd(head, 40);
+    head = insertEnd(head, 50);
+
+    printf("Linked List:\n");
+    display(head);
+
+    // Delete first node
+    head = deleteBeginning(head);
+
+    printf("\nAfter deleting first node:\n");
+    display(head);
+
+    // Delete last node
+    head = deleteEnd(head);
+
+    printf("\nAfter deleting last node:\n");
+    display(head);
+
+    return 0;
+}
