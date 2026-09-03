@@ -1,92 +1,117 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h>
 
 #define MAX 100
 
-// Stack structure
 typedef struct {
-    int items[MAX];
+    int arr[MAX];
     int top;
 } Stack;
 
-// Initialize stack
-void init(Stack *s) {
+void initStack(Stack *s) {
     s->top = -1;
 }
 
-// Check if stack is empty
 int isEmpty(Stack *s) {
     return s->top == -1;
 }
 
-// Push element
-void push(Stack *s, int value) {
-    if (s->top == MAX - 1) {
-        printf("Stack Overflow\n");
-        return;
-    }
-    s->items[++(s->top)] = value;
+int isFull(Stack *s) {
+    return s->top == MAX - 1;
 }
 
-// Pop element
+void push(Stack *s, int value) {
+    if (isFull(s)) {
+        printf("Stack Overflow\n");
+        exit(1);
+    }
+
+    s->arr[++s->top] = value;
+}
+
 int pop(Stack *s) {
     if (isEmpty(s)) {
         printf("Stack Underflow\n");
-        return -1;
+        exit(1);
     }
-    return s->items[(s->top)--];
+
+    return s->arr[s->top--];
 }
 
-// Evaluate postfix expression
+int calculate(int a, int b, char operator) {
+    switch (operator) {
+        case '+':
+            return a + b;
+
+        case '-':
+            return a - b;
+
+        case '*':
+            return a * b;
+
+        case '/':
+            if (b == 0) {
+                printf("Division by zero\n");
+                exit(1);
+            }
+            return a / b;
+
+        case '%':
+            if (b == 0) {
+                printf("Division by zero\n");
+                exit(1);
+            }
+            return a % b;
+
+        default:
+            printf("Invalid operator\n");
+            exit(1);
+    }
+}
+
 int evaluatePostfix(char exp[]) {
     Stack s;
-    init(&s);
+    initStack(&s);
 
-    int i = 0;
-    while (exp[i] != '\0') {
+    for (int i = 0; exp[i] != '\0'; i++) {
+
         char ch = exp[i];
 
         // Ignore spaces
         if (ch == ' ') {
-            i++;
             continue;
         }
 
-        // If operand, push to stack
+        // If digit, push it
         if (isdigit(ch)) {
             push(&s, ch - '0');
         }
+
         // If operator
         else {
-            int val2 = pop(&s);
-            int val1 = pop(&s);
+            int b = pop(&s);
+            int a = pop(&s);
 
-            switch (ch) {
-                case '+':
-                    push(&s, val1 + val2);
-                    break;
-                case '-':
-                    push(&s, val1 - val2);
-                    break;
-                case '*':
-                    push(&s, val1 * val2);
-                    break;
-                case '/':
-                    push(&s, val1 / val2);
-                    break;
-            }
+            int result = calculate(a, b, ch);
+
+            push(&s, result);
         }
-        i++;
     }
 
     return pop(&s);
 }
 
 int main() {
-    char postfix[] = "23*54*+9-";
+    char postfix[MAX];
+
+    printf("Enter postfix expression: ");
+    scanf("%99[^\n]", postfix);
+
+    int result = evaluatePostfix(postfix);
 
     printf("Postfix Expression: %s\n", postfix);
-    printf("Result = %d\n", evaluatePostfix(postfix));
+    printf("Result = %d\n", result);
 
     return 0;
 }
